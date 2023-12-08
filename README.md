@@ -1,6 +1,6 @@
 ## Open Source Exchange Listing Donations page - tuned Etica (EGAZ,ETI on EticaProtocol blockchain.
 image to be updated soon!
-![Miner's stats page](ipfs://needshash)
+![Coming Soon](ipfs://needshash)
 
 ### Features
 
