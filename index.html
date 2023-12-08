@@ -1,0 +1,132 @@
+5<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Listing Donations</title>
+    <style>
+        body {
+            background-color: lightgreen;
+            font-family: Arial, sans-serif;
+        }
+        #address {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        #balance {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #progressbar {
+            width: 85%;
+            background-color: #ddd;
+            border: 5px solid #000;
+            border-radius: 3px;
+            position: relative;
+        }
+        #progress {
+            height: 1%;
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+    <h1>Exchange Listing Donations</h1>
+    <div id="address">Address: 0x4ae33a8aad0305237bd754a9a466765611f7f83e</div>
+
+    <div id="balance">
+        <p>EGAZ Balance: <span id="egazBalance">Loading...</span> EGAZ</p>
+        <p>ETH Balance: <span id="ethBalance">Loading...</span> ETH</p>
+        <p>EGAZ Balance in USD: $<span id="egazBalanceUSD">Loading...</span></p>
+        <p>ETH Balance in USD: $<span id="ethBalanceUSD">Loading...</span></p>
+        <p>Total Balance in Current USD value: $<span id="usdBalanceUSD">Loading...</span></p>
+
+      <div id="progressbar">
+       <div id="progress"></div>
+      </div>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script>
+        // Ethereum Node URLs
+        const egazRPC = 'https://eticamainnet.eticaprotocol.org';
+        const ethRPC = 'https://eth.llamarpc.com';
+
+        // Ethereum Addresses
+        const egazAddress = '0x4ae33a8aad0305237bd754a9a466765611f7f83e';
+
+        // Coingecko API URL
+        const coingeckoAPI = 'https://api.coingecko.com/api/v3/simple/price?ids=egaz,ethereum&vs_currencies=usd';
+
+        // Connect to Ethereum networks
+        const egazWeb3 = new Web3(new Web3.providers.HttpProvider(egazRPC));
+        const ethWeb3 = new Web3(new Web3.providers.HttpProvider(ethRPC));
+
+        // Fetch balances and update the HTML
+        async function updateBalances() {
+            const egazBalance = await egazWeb3.eth.getBalance(egazAddress);
+            const ethBalance = await ethWeb3.eth.getBalance(egazAddress);
+
+            // Convert balances to readable formats
+            const egazBalanceFormatted = (egazBalance / 1e18).toFixed(10);
+            const ethBalanceFormatted = (ethBalance / 1e18).toFixed(10);
+
+            // Display balances on the webpage
+            $('#egazBalance').text(egazBalanceFormatted);
+            $('#ethBalance').text(ethBalanceFormatted);
+
+            // Fetch USD conversion rates from Coingecko
+            const response = await fetch(coingeckoAPI);
+            const data = await response.json();
+            const egazUSD = data.egaz.usd * egazBalanceFormatted;
+            const ethUSD = data.ethereum.usd * ethBalanceFormatted;
+            const totalUSD = egazUSD + ethUSD;
+
+            // Display USD balances on the webpage
+            $('#egazBalanceUSD').text(egazUSD.toFixed(2));
+            $('#ethBalanceUSD').text(ethUSD.toFixed(2));
+
+            // Display USD total balance in USD
+            $('#usdBalanceUSD').text(totalUSD.toFixed(2));
+
+            // Set graph Max
+            const maxBalance = 300;
+
+            const progress = (totalUSD / maxBalance) * 100;
+            const progressBar = document.getElementById('progress');
+
+            progressBar.style.width = `${progress}%`;
+           // amountText.textContent = `${totalUSD.toFixed(2)}`;
+
+
+
+        }
+
+        // Update balances every 30 seconds
+        setInterval(updateBalances, 30000);
+
+        // Initial update
+        updateBalances();
+    </script>
+</body>
+    <footer class="footer">
+
+        <p class="text-muted"> <strong>ETICA Exchange Donations Wallet</strong> <br/>
+          <strong>Check explorer ETI/EGAZ:</strong>
+          <a href="https://www.eticascan.org/address/0x4ae33a8aad0305237bd754a9a466765611f7f83e" rel="nofollow" target="_blank">
+          0x4ae33a8aad0305237bd754a9a466765611f7f83e
+          </a><br/>
+          <strong>Check explorer ETH:</strong>
+          <a href="http://etherscan.io/address/0x4ae33a8aad0305237bd754a9a466765611f7f83e" rel="nofollow" target="_blank">
+          0x4ae33a8aad0305237bd754a9a466765611f7f83e
+          </a></p>
+          <br/>
+          <p>
+          <strong>For more information about Etica join us on </strong><a href="https://discord.gg/JAGxD6g77Z" rel="nofollow" target="_blank">Discord</a>
+          </p>
+   </footer>
+</html>
